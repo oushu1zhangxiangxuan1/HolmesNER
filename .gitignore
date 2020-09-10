@@ -131,3 +131,10 @@ dmypy.json
 models/
 
 .vscode/
+
+*.json
+*.zip
+demo.*
+*.rar
+
+datasets/

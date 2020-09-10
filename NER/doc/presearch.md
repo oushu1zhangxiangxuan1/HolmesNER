@@ -45,7 +45,9 @@
 ### 1. 参考
 - https://eliyar.biz/nlp_chinese_bert_ner/
   
-### 2. 
+### 2. 基于bert-chinese-ner
+
+### 3. 基于kashgari
 
 ## 4. 特殊实体识别
 
@@ -54,3 +56,7 @@
 - 网址
 - qq及微信号码
 - 银行卡号
+
+## 5. MISC
+
+- CRF

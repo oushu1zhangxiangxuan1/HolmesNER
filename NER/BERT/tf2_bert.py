@@ -36,7 +36,7 @@ segment_ids = tf.keras.layers.Input(
     shape=(max_seq_length,), dtype=tf.int32, name="segment_ids"
 )
 bert_layer = hub.KerasLayer(
-    "https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/1", trainable=True
+    "models/chinese_L-12_H-768_A-12", trainable=True
 )
 pooled_output, sequence_output = bert_layer([input_word_ids, input_mask, segment_ids])
 

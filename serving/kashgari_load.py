@@ -14,6 +14,11 @@ print("\n\n")
 print(metrics)
 print("\n\n")
 
-# predictions = model.predict(test_x[0:5])
+print("\n=================predicton==============\n")
+predictions = model.predict(test_x[0:5])
+print(predictions)
+print("\n\n")
+
+print("\n=================predicton entities==============\n")
 predictions = model.predict_entities(test_x[0:5])
 print(predictions)

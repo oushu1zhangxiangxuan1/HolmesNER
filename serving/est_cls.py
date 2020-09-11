@@ -22,7 +22,7 @@ from bert import tokenization
 from bert import modeling
 
 import collections
-import csv
+# import csv
 import os
 import sys
 import tensorflow as tf
@@ -36,17 +36,11 @@ flags = tf.flags
 FLAGS = flags.FLAGS
 
 # Required parameters
-flags.DEFINE_string(
-    "data_dir", None,
-    "The input data dir. Should contain the .tsv files (or other data files) "
-    "for the task.")
 
 flags.DEFINE_string(
     "bert_config_file", None,
     "The config json file corresponding to the pre-trained BERT model. "
     "This specifies the model architecture.")
-
-flags.DEFINE_string("task_name", None, "The name of the task to train.")
 
 flags.DEFINE_string("vocab_file", None,
                     "The vocabulary file that the BERT model was trained on.")
@@ -71,10 +65,6 @@ flags.DEFINE_integer(
     "The maximum total input sequence length after WordPiece tokenization. "
     "Sequences longer than this will be truncated, and sequences shorter "
     "than this will be padded.")
-
-# flags.DEFINE_bool(
-#     "do_predict", False,
-#     "Whether to run the model in inference mode on the test set.")
 
 flags.DEFINE_integer("train_batch_size", 32, "Total batch size for training.")
 
@@ -174,89 +164,6 @@ class InputFeatures(object):
         self.segment_ids = segment_ids
         self.label_ids = label_ids
         self.is_real_example = is_real_example
-
-
-class DataProcessor(object):
-    """Base class for data converters for sequence classification data sets."""
-
-    def get_train_examples(self, data_dir):
-        """Gets a collection of `InputExample`s for the train set."""
-        raise NotImplementedError()
-
-    def get_dev_examples(self, data_dir):
-        """Gets a collection of `InputExample`s for the dev set."""
-        raise NotImplementedError()
-
-    def get_test_examples(self, data_dir):
-        """Gets a collection of `InputExample`s for prediction."""
-        raise NotImplementedError()
-
-    def get_labels(self):
-        """Gets the list of labels for this data set."""
-        raise NotImplementedError()
-
-    @classmethod
-    def _read_tsv(cls, input_file, quotechar=None):
-        """Reads a tab separated value file."""
-        with tf.gfile.Open(input_file, "r") as f:
-            reader = csv.reader(f, delimiter="\t", quotechar=quotechar)
-            lines = []
-            for line in reader:
-                lines.append(line)
-            return lines
-
-
-class SKE_2019_Multi_Label_Classification_Processor(DataProcessor):
-    """Processor for the SKE_2019 data set"""
-
-    # SKE_2019 data from http://lic2019.ccf.org.cn/kg
-    def __init__(self):
-        self.language = "zh"
-
-    def get_examples(self, data_dir):
-        with open(os.path.join(data_dir, "token_in.txt"), encoding='utf-8') as token_in_f:
-            with open(os.path.join(data_dir, "predicate_out.txt"), encoding='utf-8') as predicate_out_f:
-                token_in_list = [seq.replace("\n", '')
-                                 for seq in token_in_f.readlines()]
-                predicate_label_list = [seq.replace(
-                    "\n", '') for seq in predicate_out_f.readlines()]
-                assert len(token_in_list) == len(predicate_label_list)
-                examples = list(zip(token_in_list, predicate_label_list))
-                return examples
-
-    def get_train_examples(self, data_dir):
-        return self._create_example(self.get_examples(os.path.join(data_dir, "train")), "train")
-
-    def get_dev_examples(self, data_dir):
-        return self._create_example(self.get_examples(os.path.join(data_dir, "valid")), "valid")
-
-    def get_test_examples(self, data_dir):
-        with open(os.path.join(data_dir, os.path.join("test", "token_in.txt")), encoding='utf-8') as token_in_f:
-            token_in_list = [seq.replace("\n", '')
-                             for seq in token_in_f.readlines()]
-            examples = token_in_list
-            return self._create_example(examples, "test")
-
-    def get_labels(self):
-        return ['丈夫', '上映时间', '专业代码', '主持人', '主演', '主角', '人口数量', '作曲', '作者', '作词', '修业年限', '出品公司', '出版社', '出生地', '出生日期',
-                '创始人', '制片人', '占地面积', '号', '嘉宾', '国籍', '妻子', '字', '官方语言', '导演', '总部地点', '成立日期', '所在城市', '所属专辑', '改编自',
-                '朝代', '歌手', '母亲', '毕业院校', '民族', '气候', '注册资本', '海拔', '父亲', '目', '祖籍', '简称', '编剧', '董事长', '身高', '连载网站',
-                '邮政编码', '面积', '首都']
-
-    def _create_example(self, lines, set_type):
-        """Creates examples for the training and dev sets."""
-        examples = []
-        for (i, line) in enumerate(lines):
-            guid = "%s-%s" % (set_type, i)
-            if set_type == "test":
-                text_str = line
-                predicate_label_str = '丈夫'
-            else:
-                text_str = line[0]
-                predicate_label_str = line[1]
-            examples.append(
-                InputExample(guid=guid, text_a=text_str, text_b=None, label=predicate_label_str))
-        return examples
 
 
 def convert_single_example(ex_index, example, label_list, max_seq_length,
@@ -368,7 +275,7 @@ def convert_single_example(ex_index, example, label_list, max_seq_length,
 
 
 def build_single_predict_data(ex_index, example, label_list, max_seq_length, tokenizer):
-    """Converts a single `InputExample` into a single `InputFeatures`."""
+    """Converts a single `InputExample` into a single `InputFeatures`."""\
 
     label_map = {}
     for (i, label) in enumerate(label_list):
@@ -493,11 +400,10 @@ def string_tokenizer(examples, label_list, max_seq_length, tokenizer):
     input_ids = []
     input_mask = []
     segment_ids = []
-    print("\n\nstring_tokenizer examples:\n{}\n\n".format(examples))
+
     for (ex_index, example) in enumerate(examples):
-        # if ex_index % 10000 == 0:
-        #     tf.logging.info("Writing example %d of %d" %
-        #                     (ex_index, len(examples)))
+
+        tf.logging.info("building example %d : %s" % (ex_index, example))
 
         feature = build_single_predict_data(
             ex_index, example, label_list, max_seq_length, tokenizer)
@@ -525,7 +431,7 @@ def string_tokenizer(examples, label_list, max_seq_length, tokenizer):
     # features["label_ids"] = feature.label_ids
     # features["is_real_example"] = [int(feature.is_real_example)]
 
-    print("\n\n\nfeatures:\n{}\n\n\n".format(features))
+    # print("\n\n\nfeatures:\n{}\n\n\n".format(features))
 
     return tf.data.Dataset.from_tensor_slices(features)
 
@@ -719,19 +625,16 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint):
     return model_fn
 
 
-def main(_):
-    tf.logging.set_verbosity(tf.logging.INFO)
+def import_test():
+    return "import success"
 
-    processors = {
-        "ske_2019": SKE_2019_Multi_Label_Classification_Processor,
-    }
+
+def create_estimator():
+
+    tf.logging.set_verbosity(tf.logging.INFO)
 
     tokenization.validate_case_matches_checkpoint(FLAGS.do_lower_case,
                                                   FLAGS.init_checkpoint)
-
-    # if not FLAGS.do_predict:
-    #     raise ValueError(
-    #         "`do_predict' must be True.")
 
     bert_config = modeling.BertConfig.from_json_file(FLAGS.bert_config_file)
 
@@ -743,20 +646,11 @@ def main(_):
 
     tf.gfile.MakeDirs(FLAGS.output_dir)
 
-    task_name = FLAGS.task_name.lower()
+    label_list = get_labels()
 
-    if task_name not in processors:
-        raise ValueError("Task not found: %s" % (task_name))
+    # tokenizer = tokenization.FullTokenizer(
+    #     vocab_file=FLAGS.vocab_file, do_lower_case=FLAGS.do_lower_case)
 
-    processor = processors[task_name]()
-
-    label_list = processor.get_labels()
-    # label_length = len(label_list)
-
-    tokenizer = tokenization.FullTokenizer(
-        vocab_file=FLAGS.vocab_file, do_lower_case=FLAGS.do_lower_case)
-
-    # is_per_host = tf.contrib.tpu.InputPipelineConfig.PER_HOST_V2
     run_config = tf.contrib.tpu.RunConfig(
         # cluster=tpu_cluster_resolver,
         # master=FLAGS.master,
@@ -767,9 +661,6 @@ def main(_):
         #     num_shards=FLAGS.num_tpu_cores,
         #     per_host_input_for_training=is_per_host))
     )
-
-    # num_train_steps = None
-    # num_warmup_steps = None
 
     model_fn = model_fn_builder(
         bert_config=bert_config,
@@ -782,8 +673,6 @@ def main(_):
         # use_one_hot_embeddings=FLAGS.use_tpu
     )
 
-    # If TPU is not available, this will fall back to normal Estimator on CPU
-    # or GPU.
     estimator = tf.contrib.tpu.TPUEstimator(
         use_tpu=False,
         model_fn=model_fn,
@@ -791,32 +680,31 @@ def main(_):
         train_batch_size=FLAGS.train_batch_size,
         # eval_batch_size=FLAGS.eval_batch_size,
         predict_batch_size=FLAGS.predict_batch_size)
+    return estimator
 
-# if FLAGS.do_predict:
-    # predict_examples = processor.get_test_examples(FLAGS.data_dir)
-    # num_actual_predict_examples = len(predict_examples)
 
-    # predict_file = os.path.join(FLAGS.output_dir, "predict.tf_record")
-    # file_based_convert_examples_to_features(predict_examples, label_list,
-    #                                         FLAGS.max_seq_length, tokenizer,
-    #                                         predict_file)
+def get_labels():
+    return ['丈夫', '上映时间', '专业代码', '主持人', '主演', '主角', '人口数量', '作曲', '作者', '作词', '修业年限', '出品公司', '出版社', '出生地', '出生日期',
+            '创始人', '制片人', '占地面积', '号', '嘉宾', '国籍', '妻子', '字', '官方语言', '导演', '总部地点', '成立日期', '所在城市', '所属专辑', '改编自',
+            '朝代', '歌手', '母亲', '毕业院校', '民族', '气候', '注册资本', '海拔', '父亲', '目', '祖籍', '简称', '编剧', '董事长', '身高', '连载网站',
+            '邮政编码', '面积', '首都']
 
-    # tf.logging.info("***** Running prediction*****")
-    # tf.logging.info("  Num examples = %d (%d actual, %d padding)",
-    #                 len(predict_examples), num_actual_predict_examples,
-    #                 len(predict_examples) - num_actual_predict_examples)
-    # tf.logging.info("  Batch size = %d", FLAGS.predict_batch_size)
+
+def main():
+    # return
+    estimator = create_estimator()
+
     predict_test_data = [
         "《中国风水十讲》是2007年华夏出版社出版的图书，作者是杨文衡",
         "你是最爱词:许常德李素珍/曲:刘天健你的故事写到你离去后为止",
         "《苏州商会档案丛编第二辑》是2012年华中师范大学出版社出版的图书，作者是马敏、祖苏、肖芃"
     ]
     num_actual_predict_examples = len(predict_test_data)
-    # dataset = string_tokenizer(
-    #     examples=predict_test_data,
-    #     label_list=label_list,
-    #     max_seq_length=FLAGS.max_seq_length,
-    #     tokenizer=tokenizer)
+
+    label_list = get_labels()
+
+    tokenizer = tokenization.FullTokenizer(
+        vocab_file=FLAGS.vocab_file, do_lower_case=FLAGS.do_lower_case)
 
     predict_input_fn = string_based_input_fn_builder(
         data=predict_test_data,
@@ -850,10 +738,52 @@ def main(_):
     assert num_written_lines == num_actual_predict_examples
 
 
+class Config:
+    def __init__(self,
+                 data_dir="bin/predicate_classifiction/classification_data",
+                 vocab_file="pretrained_model/chinese_L-12_H-768_A-12/vocab.txt",
+                 bert_config_file="pretrained_model/chinese_L-12_H-768_A-12/bert_config.json",
+                 init_checkpoint="output/predicate_classification_model/epochs6/model.ckpt-487",
+                 max_seq_length=128,
+                 output_dir="./output/test_predict",
+                 do_lower_case=False,
+                 save_checkpoints_steps=0,
+                 train_batch_size=0,
+                 predict_batch_size=20,
+                 ):
+        self.data_dir = data_dir
+        self.vocab_file = vocab_file
+        self.bert_config_file = bert_config_file
+        self.init_checkpoint = init_checkpoint
+        self.max_seq_length = max_seq_length
+        self.output_dir = output_dir
+        self.do_lower_case = do_lower_case
+        self.save_checkpoints_steps = save_checkpoints_steps
+        self.train_batch_size = train_batch_size
+        self.predict_batch_size = predict_batch_size
+
+# flags = {
+#     "data_dir":"bin/predicate_classifiction/classification_data",
+#     "vocab_file":"pretrained_model/chinese_L-12_H-768_A-12/vocab.txt",
+#     "bert_config_file":"pretrained_model/chinese_L-12_H-768_A-12/bert_config.json",
+#     "init_checkpoint":"output/predicate_classification_model/epochs6/model.ckpt-487",
+#     "max_seq_length":128,
+#     "output_dir":"./output/test_predict",
+#     "do_lower_case":False
+# }
+
+
+FLAGS = Config()
+
+
+def get_tokenizer():
+    return tokenization.FullTokenizer(
+        vocab_file=FLAGS.vocab_file, do_lower_case=FLAGS.do_lower_case)
+
+
+def get_max_seq_length():
+    return FLAGS.max_seq_length
+
+
 if __name__ == "__main__":
-    flags.mark_flag_as_required("data_dir")
-    flags.mark_flag_as_required("task_name")
-    flags.mark_flag_as_required("vocab_file")
-    flags.mark_flag_as_required("bert_config_file")
-    flags.mark_flag_as_required("output_dir")
-    tf.app.run()
+    main()

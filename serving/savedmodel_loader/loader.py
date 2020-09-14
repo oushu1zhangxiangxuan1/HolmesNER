@@ -203,6 +203,8 @@ def main():
         }
     )
 
+    # TODO : 缺少label_ids 仍可以运行完成，测试其它feature不输入可否成功， 如果成功，则有问题
+
     print(prediction)
 
 

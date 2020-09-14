@@ -138,3 +138,5 @@ demo.*
 *.rar
 
 datasets/
+
+bert

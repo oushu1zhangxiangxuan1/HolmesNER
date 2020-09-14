@@ -741,8 +741,10 @@ def main():
 class Config:
     def __init__(self,
                  data_dir="bin/predicate_classifiction/classification_data",
-                 vocab_file="pretrained_model/chinese_L-12_H-768_A-12/vocab.txt",
-                 bert_config_file="pretrained_model/chinese_L-12_H-768_A-12/bert_config.json",
+                #  vocab_file="pretrained_model/chinese_L-12_H-768_A-12/vocab.txt",
+                #  bert_config_file="pretrained_model/chinese_L-12_H-768_A-12/bert_config.json",
+                 vocab_file="/Users/johnsaxon/test/github.com/oushu1zhangxiangxuan1/HolmesNER/NER/BERT/models/chinese_L-12_H-768_A-12/vocab.txt",
+                 bert_config_file="/Users/johnsaxon/test/github.com/oushu1zhangxiangxuan1/HolmesNER/NER/BERT/models/chinese_L-12_H-768_A-12/bert_config.json",
                  init_checkpoint="output/predicate_classification_model/epochs6/model.ckpt-487",
                  max_seq_length=128,
                  output_dir="./output/test_predict",

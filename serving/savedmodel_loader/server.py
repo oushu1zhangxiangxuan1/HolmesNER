@@ -427,8 +427,8 @@ def predict():
             print("\nfeatures_seq:\n{}\n\n".format(features_seq))
 
             seq_result = sess_seq.run(
-                # TODO: 是否可以只跑fetches_seq【3】
-                fetches_seq,
+                # TODO: 是否可以只跑fetches_seq[2]
+                fetches_seq[2],
                 feed_dict={
                         'input_ids:0': features_seq['input_ids'],
                         'input_mask:0': features_seq['input_mask'],
@@ -436,7 +436,7 @@ def predict():
                         }
             )
 
-            seq_label_result = seq_result[2]
+            seq_label_result = seq_result
 
             # for token_label_prediction in seq_label_result:
             #     token_label_output_line = " ".join(token_label_id2label[id] for id in token_label_prediction)
@@ -684,3 +684,8 @@ if __name__ == '__main__':
     fetches_seq, sess_seq = create_seq_session()
 
     main()
+
+
+# TODO: 
+# 1. 模型优化
+# 2. 数据预处理(清洗与切分)优化

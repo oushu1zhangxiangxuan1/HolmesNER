@@ -159,11 +159,11 @@ def main():
 
     tokenizer = get_tokenizer()
 
-    sess = tf.Session()
+    sess = tf.compat.v1.Session()
 
     model_path = "/home/johnsaxon/github.com/Entity-Relation-Extraction/output/saved_model/cls/1600051557"
 
-    tf.saved_model.loader.load(
+    tf.compat.v1.saved_model.loader.load(
         sess,
         [tf.saved_model.tag_constants.SERVING],
         model_path
@@ -197,11 +197,13 @@ def main():
 
 def create_session():
 
-    sess = tf.Session()
+    g = tf.Graph()
+
+    sess = tf.compat.v1.Session(graph=g)
 
     model_path = "/home/johnsaxon/github.com/Entity-Relation-Extraction/output/saved_model/cls/1600051557"
 
-    tf.saved_model.loader.load(
+    tf.compat.v1.saved_model.loader.load(
         sess,
         [tf.saved_model.tag_constants.SERVING],
         model_path
@@ -212,8 +214,22 @@ def create_session():
     return fetches, sess
 
 
+# from loader_seq import create_seq_session
+# # main()
+# f, s = create_session()
+# _, s2 = create_seq_session()
+
+# s.close()
+# s2.close()
+
+
 if "__main__" == __name__:
+    from loader_seq import create_seq_session
     # main()
+    _, s2 = create_seq_session()
     f, s = create_session()
+
     s.close()
+    s2.close()
+    pass
 

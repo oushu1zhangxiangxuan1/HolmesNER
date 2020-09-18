@@ -13,10 +13,7 @@ from loader_seq import sequence_tokenizer
 from loader_seq import get_token_labels
 import loader
 import tensorflow as tf
-from aligner import MyJSONEncoder
 # import numpy as np
-
-from aligner import predict_align
 
 app = Flask(__name__)
 
@@ -41,20 +38,6 @@ token_label_list = get_token_labels()
 token_label_id2label = {}
 for (i, label) in enumerate(token_label_list):
     token_label_id2label[i] = label
-
-
-@app.route('/holmes/nlp/re', methods=['POST'])
-@app.route('/predict/align', methods=['POST'])
-def predict_align_wrapper():
-    data = request.get_data()
-    json_data = json.loads(data.decode("utf-8"))
-    # 对不同数据进行切分，切分到小于max_raw_str_len
-    res = []
-    for doc in json_data["data"]:
-        triples = predict_align(doc, tokenizer, sess, sess_seq, fetches, fetches_seq)
-        res.append(triples)
-
-    return json.dumps(res, cls=MyJSONEncoder, ensure_ascii=False)
 
 
 @app.route('/')
@@ -405,6 +388,7 @@ def getTokenManagers(segments):
     return tokenManagers
 
 
+@app.route('/holmes/nlp/re', methods=['POST'])
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.get_data()
@@ -711,20 +695,3 @@ if __name__ == '__main__':
 # 3. 剔除重复triple
 # 4. 处理\n \tab
 # 5. 在没有split punc情况下，发生 maximum recursion depth exceeded while calling a Python object
-
-
-# Question:
-# 先tokenize？ 但是重新join起来之后，会丢失空格和大小写等  英文单词会被切分成子词， 影响长度统计   连续数字也被分成单个token 也会影响长度统计
-# 然后做不去掉分隔符的分隔
-# 最后记录base_index index
-# 返回的时候 可能会没有空格？
-# 需要记录 token index &  str index
-
-
-# Solution:
-# 1. 写自己的tokenizer？ 摒弃丢弃空格
-# 2. 
-
-
-
-# 3. tokenizer with raw index

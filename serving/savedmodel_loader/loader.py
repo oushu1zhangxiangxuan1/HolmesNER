@@ -199,7 +199,8 @@ def create_session():
 
     sess = tf.Session()
 
-    model_path = "/home/johnsaxon/github.com/Entity-Relation-Extraction/output/saved_model/cls/1600051557"
+    # model_path = "/home/johnsaxon/github.com/Entity-Relation-Extraction/output/saved_model/cls/1600051557"
+    model_path = "/home/johnsaxon/github.com/oushu1zhangxiangxuan1/NRE_Pipline_Modeling/output/saved_model/cls/epochs90/1600421123"
 
     tf.saved_model.loader.load(
         sess,

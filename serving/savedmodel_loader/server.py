@@ -43,7 +43,7 @@ for (i, label) in enumerate(token_label_list):
     token_label_id2label[i] = label
 
 
-@app.route('/holmes/nlp/re', methods=['POST'])
+@app.route('/holmes/nlp/re/align', methods=['POST'])
 @app.route('/predict/align', methods=['POST'])
 def predict_align_wrapper():
     data = request.get_data()
@@ -114,7 +114,7 @@ def predict_v1():
         if len(seq_segments)>0:
             features_seq = sequence_tokenizer(seq_segments, seq_predicate_ids, label_list, max_seq_length, tokenizer)
 
-            print("\nfeatures_seq:\n{}\n\n".format(features_seq))
+            # print("\nfeatures_seq:\n{}\n\n".format(features_seq))
 
             seq_result = sess_seq.run(
                 # TODO: 是否可以只跑fetches_seq【3】
@@ -269,9 +269,9 @@ def predict_pipline(data):
 def getTriples_v1(labels_ids, src, pred):
     # BIO_token_labels = ["[Padding]", "[category]", "[##WordPiece]", "[CLS]", "[SEP]", "B-SUB", "I-SUB", "B-OBJ", "I-OBJ", "O"]  # id 0 --> [Paddding]
 
-    print("labels_ids in getTriples_v1:\n{}".format(labels_ids))
+    # print("labels_ids in getTriples_v1:\n{}".format(labels_ids))
     labels = [token_label_id2label[id] for id in labels_ids]
-    print("labels in getTriples_v1:\n{}".format(labels))
+    # print("labels in getTriples_v1:\n{}".format(labels))
     labels.pop(0)
     triples = []
     subs = []
@@ -405,6 +405,7 @@ def getTokenManagers(segments):
     return tokenManagers
 
 
+@app.route('/holmes/nlp/re', methods=['POST'])
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.get_data()
@@ -416,7 +417,7 @@ def predict():
 
         tokenManagers = getTokenManagers(segments)
 
-        print("Total {} segments:\n{}".format(len(segments), segments))
+        # print("Total {} segments:\n{}".format(len(segments), segments))
 
         features = cls_tokenizer(tokenManagers, max_seq_length, tokenizer)
 
@@ -443,7 +444,7 @@ def predict():
         if len(tokenManagersForSeq)>0:
             features_seq = seq_tokenizer(tokenManagersForSeq, max_seq_length, tokenizer)
 
-            print("\nfeatures_seq:\n{}\n\n".format(features_seq))
+            # print("\nfeatures_seq:\n{}\n\n".format(features_seq))
 
             seq_result = sess_seq.run(
                 # TODO: 是否可以只跑fetches_seq[2]
@@ -482,9 +483,9 @@ def predict():
 def getTriples(labels_ids, src, pred):
     # BIO_token_labels = ["[Padding]", "[category]", "[##WordPiece]", "[CLS]", "[SEP]", "B-SUB", "I-SUB", "B-OBJ", "I-OBJ", "O"]  # id 0 --> [Paddding]
 
-    print("labels_ids in getTriples_v1:\n{}".format(labels_ids))
+    # print("labels_ids in getTriples_v1:\n{}".format(labels_ids))
     labels = [token_label_id2label[id] for id in labels_ids]
-    print("labels in getTriples_v1:\n{}".format(labels))
+    # print("labels in getTriples_v1:\n{}".format(labels))
     labels.pop(0)
     triples = []
     subs = []
@@ -711,6 +712,7 @@ if __name__ == '__main__':
 # 3. 剔除重复triple
 # 4. 处理\n \tab
 # 5. 在没有split punc情况下，发生 maximum recursion depth exceeded while calling a Python object
+# 6. 将部分predicate转换为属性，例如成立日期、名族等
 
 
 # Question:

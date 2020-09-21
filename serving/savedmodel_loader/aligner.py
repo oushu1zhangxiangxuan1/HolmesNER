@@ -77,6 +77,7 @@ def predict_align(data, tokenizer, sess, sess_seq, fetches, fetches_seq):
         for token in rich_tokens:
             for predicate_id in token.predicate_ids:
                 pred = predicate_labels[predicate_id]
+                # TODO: 需要考虑entity的去重及互相覆盖
                 trps = getTriples(seq_result[res_index], token.token_not_UNK, pred, token_label_map, token.base_raw_index)
                 token.set_triples(trps)
                 res_index += 1
@@ -87,9 +88,9 @@ def predict_align(data, tokenizer, sess, sess_seq, fetches, fetches_seq):
 def getTriples(labels_ids, src, pred, token_label_map, base_raw_index):
     # BIO_token_labels = ["[Padding]", "[category]", "[##WordPiece]", "[CLS]", "[SEP]", "B-SUB", "I-SUB", "B-OBJ", "I-OBJ", "O"]  # id 0 --> [Paddding]
 
-    print("labels_ids in getTriples_v1:\n{}".format(labels_ids))
+    # print("labels_ids in getTriples_v1:\n{}".format(labels_ids))
     labels = [token_label_map[id] for id in labels_ids]
-    print("labels in getTriples_v1:\n{}".format(labels))
+    # print("labels in getTriples_v1:\n{}".format(labels))
     labels.pop(0)
     triples = []
     subs = []
@@ -265,8 +266,8 @@ def _split_token_(tokens, tokens_not_UNK, max_token_len, base_raw_index):
     # sys.setrecursionlimit(55) 
 
     # print("\n\ntokens:\n{}\n".format(tokens))
-    print("\ntokens_not_UNK:\n{}".format(tokens_not_UNK))
-    print("base_raw_index:\n{}\n".format(base_raw_index))
+    # print("\ntokens_not_UNK:\n{}".format(tokens_not_UNK))
+    # print("base_raw_index:\n{}\n".format(base_raw_index))
     assert len(tokens) == len(tokens_not_UNK)
 
     rich_tokens = []
@@ -275,6 +276,8 @@ def _split_token_(tokens, tokens_not_UNK, max_token_len, base_raw_index):
     if token_len == 0:
         return rich_tokens, base_raw_index
 
+    # TODO: 遇到句号等强分隔符就得先分
+    # NEG example: 蔡庆辉，1974年10月生于福建莆田，厦门大学副教授。蓼子朴组属于桔梗目、菊科，草本或亚灌木
     if not token_len > max_token_len:
         rich_token = RichTokenManager(tokens, tokens_not_UNK, base_raw_index)
         rich_tokens.append(rich_token)

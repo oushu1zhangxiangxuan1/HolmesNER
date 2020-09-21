@@ -205,14 +205,14 @@ def create_seq_session():
 
     sess = tf.compat.v1.Session(graph=g)
 
-    model_path = "/home/johnsaxon/github.com/Entity-Relation-Extraction/output/saved_model/seq/1600064798"
+    # model_path = "/home/johnsaxon/github.com/Entity-Relation-Extraction/output/saved_model/seq/1600064798"  # base
+    # model_path = "/home/johnsaxon/github.com/oushu1zhangxiangxuan1/NRE_Pipline_Modeling/output/saved_model/seq/single_loss_only/epochs90/1600333603" # single_loss_only/epochs90
+    model_path = "/home/johnsaxon/github.com/oushu1zhangxiangxuan1/NRE_Pipline_Modeling/output/saved_model/seq/base/epochs90/1600340817" # base/epochs90
     tf.compat.v1.saved_model.loader.load(
         sess,
         [tf.saved_model.SERVING],
         model_path
     )
-
-    
 
     predicate_prediction = sess.graph.get_tensor_by_name("predicate_loss/ArgMax:0")
 

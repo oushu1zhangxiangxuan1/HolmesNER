@@ -159,7 +159,11 @@ def main():
 
     tokenizer = get_tokenizer()
 
-    sess = tf.Session()
+    config = tf.ConfigProto()
+
+    config.gpu_options.allow_growth = True
+
+    sess = tf.Session(config=config)
 
     model_path = "/home/johnsaxon/github.com/Entity-Relation-Extraction/output/saved_model/cls/1600051557"
 
@@ -190,14 +194,22 @@ def main():
             'segment_ids:0': features['segment_ids']
         }
     )
-    sess.close()
 
     print(prediction)
+
+    import time
+    time.sleep(10)
+    
+    sess.close()
 
 
 def create_session():
 
-    sess = tf.Session()
+    config = tf.ConfigProto()
+
+    config.gpu_options.allow_growth = True
+
+    sess = tf.Session(config=config)
 
     # model_path = "/home/johnsaxon/github.com/Entity-Relation-Extraction/output/saved_model/cls/1600051557"
     model_path = "/home/johnsaxon/github.com/oushu1zhangxiangxuan1/NRE_Pipline_Modeling/output/saved_model/cls/epochs90/1600421123"
@@ -214,7 +226,7 @@ def create_session():
 
 
 if "__main__" == __name__:
-    # main()
-    f, s = create_session()
-    s.close()
+    main()
+    # f, s = create_session()
+    # s.close()
 

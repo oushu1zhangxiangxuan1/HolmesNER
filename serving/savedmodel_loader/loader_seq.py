@@ -201,9 +201,13 @@ def main():
 
 def create_seq_session():
 
+    config = tf.ConfigProto()
+
+    config.gpu_options.allow_growth = True
+
     g = tf.Graph()
 
-    sess = tf.compat.v1.Session(graph=g)
+    sess = tf.compat.v1.Session(graph=g, config=config)
 
     # model_path = "/home/johnsaxon/github.com/Entity-Relation-Extraction/output/saved_model/seq/1600064798"  # base
     # model_path = "/home/johnsaxon/github.com/oushu1zhangxiangxuan1/NRE_Pipline_Modeling/output/saved_model/seq/single_loss_only/epochs90/1600333603" # single_loss_only/epochs90

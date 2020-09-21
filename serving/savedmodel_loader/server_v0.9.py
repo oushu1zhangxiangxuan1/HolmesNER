@@ -14,10 +14,9 @@ from loader_seq import get_token_labels
 import loader
 import tensorflow as tf
 from aligner import MyJSONEncoder
+# import numpy as np
+
 from aligner import predict_align
-from aligner import TokenSegmenter
-from loader_ner import create_ner_model
-from tensorflow.keras.backend import set_session
 
 app = Flask(__name__)
 
@@ -28,8 +27,6 @@ app = Flask(__name__)
 fetches, sess = None, None
 
 fetches_seq, sess_seq = None, None
-
-ner_model, ner_graph, ner_sess = None, None, None
 
 label_list = est_cls.get_labels()
 
@@ -59,36 +56,6 @@ def predict_align_wrapper():
 
     return json.dumps(res, cls=MyJSONEncoder, ensure_ascii=False)
 
-
-@app.route('/holmes/nlp/ner', methods=['POST'])
-def predicate_ner():
-    data = request.get_data()
-    json_data = json.loads(data.decode("utf-8"))
-    res = []
-    max_token_len = 98
-    # print("json_data: ", json_data)
-
-    with ner_graph.as_default():
-        # with ner_sess.as_default():
-        set_session(ner_sess)
-
-        # test = [['第', '一', '次', '明', '确', '提', '出', '把', '自', '己', '建', '设', '成', '“', '国', '家', '科', '学', '思', '想', '库', '”', '的', '设', '想', '，', '路', '甬', '祥', '指', '出', '，', '面', '向', '新', '世', '纪', '，', '中', '科', '院', '学', '部', '要', '建', '设', '成', '最', '有', '影', '响', '的', '国', '家', '宏', '观', '决', '策', '科', '技', '咨', '询', '系', '统', '，', '要', '充', '分', '发', '挥', '院', '士', '群', '体', '的', '优', '势', '，', '加', '强', '科', '技', '战', '略', '研', '究', '，', '重', '点', '做', '好', '对', '国', '家', '宏', '观', '科', '技', '政', '策', '、', '科', '技', '发', '展', '计', '划', '、', '学', '科', '发', '展', '战', '略', '的', '制', '定', '以', '及', '经', '济', '建', '设', '、', '社', '会', '发', '展', '中', '重', '大', '科', '技', '问', '题', '的', '咨', '询', '工', '作', '。']]
-        # predicts = ner_model.predict_entities(test)
-        # print("test preds: ", predicts)
-
-
-        for doc in json_data["data"]:
-            tokens = tokenizer.tokenize(doc)
-            tokens_not_UNK = tokenizer.tokenize_not_UNK(doc)
-            tokenSegmenter = TokenSegmenter(tokens, tokens_not_UNK)
-            rich_tokens, _ = tokenSegmenter.split(max_token_len)
-            lines = []
-            for token in rich_tokens:
-                lines.append(token.token_not_UNK)
-            print("lines:\n{}".format(lines))
-            predicts = ner_model.predict_entities(lines,join_chunk='')
-            res.append(predicts)
-        return json.dumps(res, ensure_ascii=False)
 
 @app.route('/')
 def home():
@@ -512,6 +479,7 @@ def predict():
     return json.dumps(res, ensure_ascii=False)
 
 
+
 def getTriples(labels_ids, src, pred):
     # BIO_token_labels = ["[Padding]", "[category]", "[##WordPiece]", "[CLS]", "[SEP]", "B-SUB", "I-SUB", "B-OBJ", "I-OBJ", "O"]  # id 0 --> [Paddding]
 
@@ -731,13 +699,9 @@ def main():
 
 
 if __name__ == '__main__':
-    from datetime import datetime
-    start = datetime.now()
+
     fetches, sess = create_session()
     fetches_seq, sess_seq = create_seq_session()
-    ner_model, ner_graph, ner_sess = create_ner_model()
-    end = datetime.now()
-    print("启动耗时: {}".format(end-start))
 
     main()
 

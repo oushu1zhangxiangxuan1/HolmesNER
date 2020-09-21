@@ -1,8 +1,16 @@
+import tensorflow as tf
+from tensorflow.keras.backend import set_session
+
+config = tf.ConfigProto()
+# config.gpu_options.allocator_type = 'BFC' #A "Best-fit with coalescing" algorithm, simplified from a version of dlmalloc.
+# config.gpu_options.per_process_gpu_memory_fraction = 0.5
+config.gpu_options.allow_growth = True
+set_session(tf.Session(config=config)) 
 
 from kashgari.utils import load_model
 from kashgari.corpus import ChineseDailyNerCorpus
 
-model = load_model('models/ner.h5')
+model = load_model('/home/johnsaxon/HolmesNER/BERT/ner.h5')
 
 print(dir(model))
 
